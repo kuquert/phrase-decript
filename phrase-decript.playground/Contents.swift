@@ -6,24 +6,29 @@ protocol CustomDecodable {
 
 struct AsciiCode: CustomDecodable {
     func decode(input: String) -> String {
-        let a = input
+        let sanitizedInputArray = input
             .split(separator: "\n")
             .joined(separator: " ")
             .map { String($0) }
             .reduce("") { $0 + $1 }
             .split(separator: " ")
             .map { String($0) }
-            .map { Character(UnicodeScalar(Int($0, radix: 16)!)!) }
-            .map { String($0) }
         
-        return a.reduce("") { $0 + $1 }
+        let decodedCharacter = sanitizedInputArray
+            .compactMap { Int($0, radix: 16) }
+            .compactMap { UnicodeScalar($0) }
+            .map { Character($0) }
+        
+        return decodedChars
+            .map { String($0) }
+            .reduce("") { $0 + $1 }
     }
 }
 
 
 struct MorseCode: CustomDecodable {
     private let morseKeyToCharValue = [ ".-" : "A", "-..." : "B", "-.-." : "C", "-.." : "D", "." : "E", "..-." : "F", "--." : "G", "...." : "H", ".." : "I", ".---" : "J", "-.-" : "K", ".-.." : "L", "--" : "M", "-." : "N", "---" : "O", ".--." : "P", "--.-" : "Q", ".-." : "R", "..." : "S", "-" : "T", "..-" : "U", "...-" : "V", ".--" : "W", "-..-" : "X", "-.--" : "Y", "--.." : "Z", ".----" : "1", "..---" : "2", "...--" : "3", "....-" : "4", "....." : "5", "-...." : "6", "--..." : "7", "---.." : "8", "----." : "9", "-----" : "0", "--..--" : "", ".-.-.-" : ".", "..--.." : "?", "-..-." : "/", "-....-" : "-", "-.--." : "(",
-        "-.--.-" : ")"
+                                        "-.--.-" : ")"
     ]
     
     func decode(input: String) -> String {
